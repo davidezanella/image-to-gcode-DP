@@ -2,6 +2,7 @@
 
 import numpy as np
 import cv2
+import math
 
 
 def elaborate_image(image_name, blackThreshold, whiteThreshold, canny_min, canny_max, black_steps=2, gray_steps=6):
@@ -117,7 +118,24 @@ def elaborate_image(image_name, blackThreshold, whiteThreshold, canny_min, canny
 
     gcode = ''
 
-    for c in contours:
+    contours_start = sorted(contours, key=lambda x: (x[0][0][0], x[0][0][1]))
+
+    contours_new = []
+
+    contours_new.append(contours_start[0])
+    del contours_start[0]
+    while len(contours_start) > 0:
+        cont = contours_new[-1]
+
+        min_elem = min(contours_start,
+            key=lambda x: math.sqrt((cont[-1][0][0] - x[0][0][0])**2 + (cont[-1][0][1] - x[0][0][1])**2))
+
+        cont_idx = [np.array_equal(min_elem, x) for x in contours_start].index(True)
+
+        contours_new.append(min_elem)
+        del contours_start[cont_idx]
+
+    for c in contours_new:
         x, y = c[0][0]
         gcode += move(x, y, True)
         gcode += penDown()
