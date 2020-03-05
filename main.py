@@ -31,7 +31,9 @@ class DisplayImageWidget(QWidget):
                 qformat = QtGui.QImage.Format_RGB888
 
         self.image = QtGui.QImage(self.image.data, size[1], size[0], step, qformat).rgbSwapped()
-        self.image_frame.setPixmap(QtGui.QPixmap.fromImage(self.image))
+        pixmap = QtGui.QPixmap.fromImage(self.image)
+        pixmap = pixmap.scaledToWidth(500)
+        self.image_frame.setPixmap(pixmap)
 
 
 class MainWIndow(QMainWindow):
