@@ -17,3 +17,6 @@ python main.py
 Choose an image, tune the settings and find the best ones.
 
 Export the results as a gcode file using the specific button.
+
+
+![Main window](example_images/main_window.png)
