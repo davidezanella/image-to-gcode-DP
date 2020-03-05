@@ -66,7 +66,7 @@ class MainWIndow(QMainWindow):
         btn_load.clicked.connect(self.load_image)
         btn_layout.addWidget(btn_load)
 
-        lbl_black = QLabel('Black threshold:')
+        self.lbl_black = QLabel()
         self.slider_black = QSlider(QtCore.Qt.Horizontal)
         self.slider_black.setMinimum(0)
         self.slider_black.setMaximum(255)
@@ -74,10 +74,10 @@ class MainWIndow(QMainWindow):
         self.slider_black.setTickPosition(QSlider.TicksBelow)
         self.slider_black.setTickInterval(5)
         self.slider_black.valueChanged.connect(self.value_change)
-        btn_layout.addWidget(lbl_black)
+        btn_layout.addWidget(self.lbl_black)
         btn_layout.addWidget(self.slider_black)
 
-        lbl_white = QLabel('White threshold:')
+        self.lbl_white = QLabel()
         self.slider_white = QSlider(QtCore.Qt.Horizontal)
         self.slider_white.setMinimum(0)
         self.slider_white.setMaximum(255)
@@ -85,10 +85,10 @@ class MainWIndow(QMainWindow):
         self.slider_white.setTickPosition(QSlider.TicksBelow)
         self.slider_white.setTickInterval(5)
         self.slider_white.valueChanged.connect(self.value_change)
-        btn_layout.addWidget(lbl_white)
+        btn_layout.addWidget(self.lbl_white)
         btn_layout.addWidget(self.slider_white)
 
-        lbl_canny_min = QLabel('Canny min value:')
+        self.lbl_canny_min = QLabel()
         self.slider_canny_min = QSlider(QtCore.Qt.Horizontal)
         self.slider_canny_min.setMinimum(0)
         self.slider_canny_min.setMaximum(255)
@@ -96,10 +96,10 @@ class MainWIndow(QMainWindow):
         self.slider_canny_min.setTickPosition(QSlider.TicksBelow)
         self.slider_canny_min.setTickInterval(5)
         self.slider_canny_min.valueChanged.connect(self.value_change)
-        btn_layout.addWidget(lbl_canny_min)
+        btn_layout.addWidget(self.lbl_canny_min)
         btn_layout.addWidget(self.slider_canny_min)
 
-        lbl_canny_max = QLabel('Canny max value:')
+        self.lbl_canny_max = QLabel()
         self.slider_canny_max = QSlider(QtCore.Qt.Horizontal)
         self.slider_canny_max.setMinimum(0)
         self.slider_canny_max.setMaximum(255)
@@ -107,10 +107,10 @@ class MainWIndow(QMainWindow):
         self.slider_canny_max.setTickPosition(QSlider.TicksBelow)
         self.slider_canny_max.setTickInterval(5)
         self.slider_canny_max.valueChanged.connect(self.value_change)
-        btn_layout.addWidget(lbl_canny_max)
+        btn_layout.addWidget(self.lbl_canny_max)
         btn_layout.addWidget(self.slider_canny_max)
 
-        lbl_black_steps = QLabel('Black filling steps:')
+        self.lbl_black_steps = QLabel()
         self.slider_black_steps = QSlider(QtCore.Qt.Horizontal)
         self.slider_black_steps.setMinimum(1)
         self.slider_black_steps.setMaximum(50)
@@ -118,10 +118,10 @@ class MainWIndow(QMainWindow):
         self.slider_black_steps.setTickPosition(QSlider.TicksBelow)
         self.slider_black_steps.setTickInterval(1)
         self.slider_black_steps.valueChanged.connect(self.value_change)
-        btn_layout.addWidget(lbl_black_steps)
+        btn_layout.addWidget(self.lbl_black_steps)
         btn_layout.addWidget(self.slider_black_steps)
 
-        lbl_gray_steps = QLabel('Gray filling steps:')
+        self.lbl_gray_steps = QLabel()
         self.slider_gray_steps = QSlider(QtCore.Qt.Horizontal)
         self.slider_gray_steps.setMinimum(1)
         self.slider_gray_steps.setMaximum(50)
@@ -129,7 +129,7 @@ class MainWIndow(QMainWindow):
         self.slider_gray_steps.setTickPosition(QSlider.TicksBelow)
         self.slider_gray_steps.setTickInterval(1)
         self.slider_gray_steps.valueChanged.connect(self.value_change)
-        btn_layout.addWidget(lbl_gray_steps)
+        btn_layout.addWidget(self.lbl_gray_steps)
         btn_layout.addWidget(self.slider_gray_steps)
 
         btn_update = QPushButton('Refresh image')
@@ -147,6 +147,7 @@ class MainWIndow(QMainWindow):
 
         self.setCentralWidget(main_widget)
 
+        self.value_change()
         self.load_image()
 
 
@@ -169,6 +170,13 @@ class MainWIndow(QMainWindow):
         self.canny_max = self.slider_canny_max.value()
         self.black_steps = self.slider_black_steps.value()
         self.gray_steps = self.slider_gray_steps.value()
+
+        self.lbl_black.setText('Black threshold: ' + str(self.black_threshold))
+        self.lbl_white.setText('White threshold: ' + str(self.white_threshold))
+        self.lbl_canny_min.setText('Canny min value: ' + str(self.canny_min))
+        self.lbl_canny_max.setText('Canny max value: ' + str(self.canny_max))
+        self.lbl_black_steps.setText('Black filling steps: ' + str(self.black_steps))
+        self.lbl_gray_steps.setText('Gray filling steps: ' + str(self.gray_steps))
 
 
     def get_gcode(self):
