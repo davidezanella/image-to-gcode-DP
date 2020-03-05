@@ -64,6 +64,7 @@ class MainWIndow(QMainWindow):
 
         btn_load = QPushButton('Load image')
         btn_load.clicked.connect(self.load_image)
+        btn_load.setIcon(QtGui.QIcon.fromTheme("document-open"))
         btn_layout.addWidget(btn_load)
 
         self.lbl_black = QLabel()
@@ -134,10 +135,12 @@ class MainWIndow(QMainWindow):
 
         btn_update = QPushButton('Refresh image')
         btn_update.clicked.connect(self.update)
+        btn_update.setIcon(QtGui.QIcon.fromTheme("view-refresh"))
         btn_layout.addWidget(btn_update)
 
         btn_gcode = QPushButton('Export Gcode')
         btn_gcode.clicked.connect(self.get_gcode)
+        btn_gcode.setIcon(QtGui.QIcon.fromTheme("document-save"))
         btn_layout.addWidget(btn_gcode)
 
         layout.addLayout(btn_layout)
