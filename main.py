@@ -180,10 +180,12 @@ class MainWIndow(QMainWindow):
 
 
     def get_gcode(self):
-        with open("path.gcode", "w+") as f:
-            f.write(self.gcode)
+        fileName, _ = QFileDialog.getSaveFileName(self, "Save GCode", "path.gcode", "Gcode Files (*.gcode)")
+        if fileName:
+            with open(fileName, "w+") as f:
+                f.write(self.gcode)
 
-        self.statusBar.showMessage('Gcode saved!')
+            self.statusBar.showMessage('Gcode saved!')
 
 
     def load_image(self):
