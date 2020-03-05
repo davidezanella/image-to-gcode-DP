@@ -38,7 +38,7 @@ class MainWIndow(QMainWindow):
     def __init__(self, parent = None):
         super(MainWIndow, self).__init__(parent)
 
-        self.image_name = '34.jpg'
+        self.image_name = ''
         self.blackThreshold = 60
         self.whiteThreshold = 120
         self.canny_min = 50
@@ -114,12 +114,12 @@ class MainWIndow(QMainWindow):
 
         layout.addLayout(btn_layout)
 
-        self.update()
-
         main_widget = QWidget()
         main_widget.setLayout(layout)
 
         self.setCentralWidget(main_widget)
+
+        self.load_image()
 
 
     def update(self):
