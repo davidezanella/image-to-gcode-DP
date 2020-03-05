@@ -4,11 +4,16 @@ import numpy as np
 import cv2
 
 
-def elaborate_image(image_name, blackThreshold, whiteThreshold, canny_min, canny_max):
+def elaborate_image(image_name, blackThreshold, whiteThreshold, canny_min, canny_max, black_steps=2, gray_steps=6):
+    white = [255,255,255]
+    black = [0,0,0]
+    gray = [81,81,81]
+
+
     image = cv2.imread(image_name)
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    gray = cv2.medianBlur(image, 3)
-    edged = cv2.Canny(gray, canny_min, canny_max)
+    gray_img = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    gray_img = cv2.medianBlur(image, 3)
+    edged = cv2.Canny(gray_img, canny_min, canny_max)
 
 
     ret, labels = cv2.connectedComponents(edged)
@@ -30,14 +35,14 @@ def elaborate_image(image_name, blackThreshold, whiteThreshold, canny_min, canny
                 for x in range(-1, 1):
                     for y in range(-1, 1):
                         if xPos + x in range(0, imageWidth) and yPos + y in range(0, imageHeight):
-                            output[yPos + y, xPos + x] = [0,0,0] #black
+                            output[yPos + y, xPos + x] = black
 
             if brightness < blackThreshold:
-                image[yPos, xPos] = [0,0,0] #black
+                image[yPos, xPos] = black
             elif brightness < whiteThreshold:
-                image[yPos, xPos] = [81,81,81] #gray
+                image[yPos, xPos] = gray
             else:
-                image[yPos, xPos] = [255,255,255] #white
+                image[yPos, xPos] = white
 
 
     def penDown():
@@ -124,8 +129,8 @@ def elaborate_image(image_name, blackThreshold, whiteThreshold, canny_min, canny
         gcode += penUp()
 
 
-    gcode += hatch(image, output, [0,0,0], 2)
-    gcode += hatch(image, output, [81,81,81], 6)
+    gcode += hatch(image, output, black, black_steps)
+    gcode += hatch(image, output, gray, gray_steps)
 
 
     return output, gcode

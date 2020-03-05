@@ -41,10 +41,14 @@ class MainWIndow(QMainWindow):
         super(MainWIndow, self).__init__(parent)
 
         self.image_name = ''
-        self.blackThreshold = 60
-        self.whiteThreshold = 120
+
+        self.black_threshold = 60
+        self.white_threshold = 120
         self.canny_min = 50
         self.canny_max = 200
+        self.black_steps = 2
+        self.gray_steps = 6
+
 
         self.statusBar = QStatusBar()
         self.setWindowTitle('Image to Gcode - Duck Plotter')
@@ -66,7 +70,7 @@ class MainWIndow(QMainWindow):
         self.slider_black = QSlider(QtCore.Qt.Horizontal)
         self.slider_black.setMinimum(0)
         self.slider_black.setMaximum(255)
-        self.slider_black.setValue(self.blackThreshold)
+        self.slider_black.setValue(self.black_threshold)
         self.slider_black.setTickPosition(QSlider.TicksBelow)
         self.slider_black.setTickInterval(5)
         self.slider_black.valueChanged.connect(self.value_change)
@@ -77,7 +81,7 @@ class MainWIndow(QMainWindow):
         self.slider_white = QSlider(QtCore.Qt.Horizontal)
         self.slider_white.setMinimum(0)
         self.slider_white.setMaximum(255)
-        self.slider_white.setValue(self.whiteThreshold)
+        self.slider_white.setValue(self.white_threshold)
         self.slider_white.setTickPosition(QSlider.TicksBelow)
         self.slider_white.setTickInterval(5)
         self.slider_white.valueChanged.connect(self.value_change)
@@ -106,6 +110,28 @@ class MainWIndow(QMainWindow):
         btn_layout.addWidget(lbl_canny_max)
         btn_layout.addWidget(self.slider_canny_max)
 
+        lbl_black_steps = QLabel('Black filling steps:')
+        self.slider_black_steps = QSlider(QtCore.Qt.Horizontal)
+        self.slider_black_steps.setMinimum(1)
+        self.slider_black_steps.setMaximum(50)
+        self.slider_black_steps.setValue(self.black_steps)
+        self.slider_black_steps.setTickPosition(QSlider.TicksBelow)
+        self.slider_black_steps.setTickInterval(1)
+        self.slider_black_steps.valueChanged.connect(self.value_change)
+        btn_layout.addWidget(lbl_black_steps)
+        btn_layout.addWidget(self.slider_black_steps)
+
+        lbl_gray_steps = QLabel('Gray filling steps:')
+        self.slider_gray_steps = QSlider(QtCore.Qt.Horizontal)
+        self.slider_gray_steps.setMinimum(1)
+        self.slider_gray_steps.setMaximum(50)
+        self.slider_gray_steps.setValue(self.gray_steps)
+        self.slider_gray_steps.setTickPosition(QSlider.TicksBelow)
+        self.slider_gray_steps.setTickInterval(1)
+        self.slider_gray_steps.valueChanged.connect(self.value_change)
+        btn_layout.addWidget(lbl_gray_steps)
+        btn_layout.addWidget(self.slider_gray_steps)
+
         btn_update = QPushButton('Refresh image')
         btn_update.clicked.connect(self.update)
         btn_layout.addWidget(btn_update)
@@ -128,18 +154,21 @@ class MainWIndow(QMainWindow):
         self.statusBar.showMessage('Loading image...')
         QApplication.processEvents() # update UI
 
-        image_opencv, self.gcode = elaborate_image(self.image_name, self.blackThreshold,
-            self.whiteThreshold, self.canny_min, self.canny_max)
+        image_opencv, self.gcode = elaborate_image(self.image_name, self.black_threshold,
+            self.white_threshold, self.canny_min, self.canny_max,
+            self.black_steps, self.gray_steps)
         self.display_image_widget.update_image(image_opencv)
 
         self.statusBar.showMessage('Ready')
 
 
     def value_change(self):
-        self.blackThreshold = self.slider_black.value()
-        self.whiteThreshold = self.slider_white.value()
+        self.black_threshold = self.slider_black.value()
+        self.white_threshold = self.slider_white.value()
         self.canny_min = self.slider_canny_min.value()
         self.canny_max = self.slider_canny_max.value()
+        self.black_steps = self.slider_black_steps.value()
+        self.gray_steps = self.slider_gray_steps.value()
 
 
     def get_gcode(self):
@@ -159,6 +188,6 @@ class MainWIndow(QMainWindow):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     main = MainWIndow()
-    main.showMaximized()
+    main.show()
 
     sys.exit(app.exec_())
