@@ -73,26 +73,36 @@ def elaborate_image(image_name, blackThreshold, whiteThreshold, canny_min, canny
 
     def hatch(image, output, target_color, step):
         gcode = ''
+        svg_img = ''
 
         xArray = [(xPos, 0) for xPos in range(0, imageWidth, step)]
         yArray = [(0, yPos) for yPos in range(0, imageHeight, step)]
 
         for xPos, yPos in xArray + yArray:
             begin = False
+            xFound, yFound = (-1, -1)
             while xPos < imageWidth and yPos < imageHeight:
                 r1,g1,b1 = image[yPos, xPos]
                 r2,b2,g2 = target_color
                 if r1 == r2 and b1 == b2 and g1 == g2:
                     if not begin:
-                        gcode += move(xPos, yPos, True)
+                        xFound = xPos
+                        yFound = yPos
+                    elif yPos == imageHeight - 1 or xPos == imageWidth - 1:
+                        svg_img += '<path d="M {} {} '.format(xFound, yFound)
+                        gcode += move(xFound, yFound, True)
                         gcode += penDown()
-                    elif yPos == imageHeight + 1:
+                        svg_img += '{} {}"/>\n'.format(xPos, yPos)
                         gcode += move(xPos, yPos)
                         gcode += penUp()
 
                     begin = True
                     output[yPos, xPos] = [0,0,0]
                 elif begin:
+                    svg_img += '<path d="M {} {} '.format(xFound, yFound)
+                    gcode += move(xFound, yFound, True)
+                    gcode += penDown()
+                    svg_img += '{} {}"/>\n'.format(xPos, yPos)
                     gcode += move(xPos, yPos)
                     gcode += penUp()
                     begin = False
@@ -100,7 +110,7 @@ def elaborate_image(image_name, blackThreshold, whiteThreshold, canny_min, canny
                 xPos = min(xPos + 1, imageWidth)
                 yPos = min(yPos + 1, imageHeight)
 
-        return gcode
+        return svg_img, gcode
 
     gcode = ''
 
@@ -121,20 +131,30 @@ def elaborate_image(image_name, blackThreshold, whiteThreshold, canny_min, canny
         contours_new.append(min_elem)
         del contours_start[cont_idx]
 
+
+    svg_img = '<svg width="{}" height="{}" xmlns="http://www.w3.org/2000/svg">'.format(imageWidth, imageHeight)
+    svg_img += '<style>path { stroke: black; stroke-width: 1px; } </style>'
+
     for c in contours_new:
         x, y = c[0][0]
         gcode += move(x, y, True)
         gcode += penDown()
 
+        svg_img += '<path d="M {} {} '.format(x, y)
+
         for i in range(1, len(c)):
             x, y = c[i][0]
             gcode += move(x, y)
+            svg_img += '{} {} '.format(x, y)
 
         gcode += penUp()
+        svg_img += '"/>\n'
 
+    svg_img_black, gcode_black = hatch(image, output, black, black_steps)
+    svg_img_gray, gcode_gray = hatch(image, output, gray, gray_steps)
 
-    gcode += hatch(image, output, black, black_steps)
-    gcode += hatch(image, output, gray, gray_steps)
+    gcode += gcode_black + gcode_gray
 
+    svg_img += svg_img_black + svg_img_gray + '</svg>'
 
-    return output, gcode
+    return svg_img, gcode

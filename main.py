@@ -2,6 +2,7 @@
 
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QHBoxLayout, QVBoxLayout, QLabel, QStatusBar, QMainWindow, QSlider, QFileDialog
 from PyQt5 import QtCore, QtGui
+from PyQt5.QtSvg import QSvgWidget, QSvgRenderer
 import sys
 
 from image_manipulation import elaborate_image
@@ -11,29 +12,16 @@ class DisplayImageWidget(QWidget):
     def __init__(self, parent=None):
         super(DisplayImageWidget, self).__init__(parent)
 
-        self.image_frame = QLabel()
+        self.image_frame = QSvgWidget()
 
         self.layout = QVBoxLayout()
         self.layout.addWidget(self.image_frame)
         self.setLayout(self.layout)
 
 
-    def update_image(self, image_opencv):
-        self.image = image_opencv
-        size = self.image.shape
-        step = self.image.size / size[0]
-        qformat = QtGui.QImage.Format_Indexed8
-
-        if len(size) == 3:
-            if size[2] == 4:
-                qformat = QtGui.QImage.Format_RGBA8888
-            else:
-                qformat = QtGui.QImage.Format_RGB888
-
-        self.image = QtGui.QImage(self.image.data, size[1], size[0], step, qformat).rgbSwapped()
-        pixmap = QtGui.QPixmap.fromImage(self.image)
-        pixmap = pixmap.scaledToWidth(700)
-        self.image_frame.setPixmap(pixmap)
+    def update_image(self, svg_img):
+        svg_bytes = bytearray(svg_img, encoding='utf-8')
+        self.image_frame.renderer().load(svg_bytes)
 
 
 class MainWIndow(QMainWindow):
@@ -158,10 +146,10 @@ class MainWIndow(QMainWindow):
         self.statusBar.showMessage('Loading image...')
         QApplication.processEvents() # update UI
 
-        image_opencv, self.gcode = elaborate_image(self.image_name, self.black_threshold,
+        svg_img, self.gcode = elaborate_image(self.image_name, self.black_threshold,
             self.white_threshold, self.canny_min, self.canny_max,
             self.black_steps, self.gray_steps)
-        self.display_image_widget.update_image(image_opencv)
+        self.display_image_widget.update_image(svg_img)
 
         self.statusBar.showMessage('Ready')
 
