@@ -32,7 +32,7 @@ class DisplayImageWidget(QWidget):
 
         self.image = QtGui.QImage(self.image.data, size[1], size[0], step, qformat).rgbSwapped()
         pixmap = QtGui.QPixmap.fromImage(self.image)
-        pixmap = pixmap.scaledToWidth(500)
+        pixmap = pixmap.scaledToWidth(700)
         self.image_frame.setPixmap(pixmap)
 
 

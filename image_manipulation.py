@@ -74,9 +74,12 @@ def elaborate_image(image_name, blackThreshold, whiteThreshold, canny_min, canny
     def hatch(image, output, target_color, step):
         gcode = ''
 
-        for xPos in range(0, imageWidth, step):
+        xArray = [(xPos, 0) for xPos in range(0, imageWidth, step)]
+        yArray = [(0, yPos) for yPos in range(0, imageHeight, step)]
+
+        for xPos, yPos in xArray + yArray:
             begin = False
-            for yPos in range(imageHeight):
+            while xPos < imageWidth and yPos < imageHeight:
                 r1,g1,b1 = image[yPos, xPos]
                 r2,b2,g2 = target_color
                 if r1 == r2 and b1 == b2 and g1 == g2:
@@ -94,25 +97,8 @@ def elaborate_image(image_name, blackThreshold, whiteThreshold, canny_min, canny
                     gcode += penUp()
                     begin = False
 
-        for yPos in range(0, imageHeight, step):
-            begin = False
-            for xPos in range(imageWidth):
-                r1,g1,b1 = image[yPos, xPos]
-                r2,b2,g2 = target_color
-                if r1 == r2 and b1 == b2 and g1 == g2:
-                    if not begin:
-                        gcode += move(xPos, yPos, True)
-                        gcode += penDown()
-                    elif xPos == imageWidth + 1:
-                        gcode += move(xPos, yPos)
-                        gcode += penUp()
-
-                    begin = True
-                    output[yPos, xPos] = [0,0,0]
-                elif begin:
-                    gcode += move(xPos, yPos)
-                    gcode += penUp()
-                    begin = False
+                xPos = min(xPos + 1, imageWidth)
+                yPos = min(yPos + 1, imageHeight)
 
         return gcode
 
