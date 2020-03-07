@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QHBoxLayout, QVBoxLayout, QLabel, QStatusBar, QMainWindow, QSlider, QFileDialog
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QHBoxLayout, QVBoxLayout, QSplitter, QLabel, QStatusBar, QMainWindow, QSlider, QFileDialog
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtSvg import QSvgWidget, QSvgRenderer
 import sys
@@ -42,7 +42,7 @@ class MainWIndow(QMainWindow):
         self.setWindowTitle('Image to Gcode - Duck Plotter')
         self.setStatusBar(self.statusBar)
 
-        layout = QHBoxLayout()
+        layout = QSplitter()
 
         self.display_image_widget = DisplayImageWidget()
         layout.addWidget(self.display_image_widget)
@@ -131,12 +131,13 @@ class MainWIndow(QMainWindow):
         btn_gcode.setIcon(QtGui.QIcon.fromTheme("document-save"))
         btn_layout.addWidget(btn_gcode)
 
-        layout.addLayout(btn_layout)
+        btn_layout_widget = QWidget()
+        btn_layout_widget.setLayout(btn_layout)
+        layout.addWidget(btn_layout_widget)
+        layout.setStretchFactor(0, 3)
+        layout.setStretchFactor(1, 1)
 
-        main_widget = QWidget()
-        main_widget.setLayout(layout)
-
-        self.setCentralWidget(main_widget)
+        self.setCentralWidget(layout)
 
         self.value_change()
         self.load_image()
