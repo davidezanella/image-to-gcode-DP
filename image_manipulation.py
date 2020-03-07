@@ -133,7 +133,7 @@ def elaborate_image(image_name, blackThreshold, whiteThreshold, canny_min, canny
 
 
     svg_img = '<svg width="{}" height="{}" xmlns="http://www.w3.org/2000/svg">'.format(imageWidth, imageHeight)
-    svg_img += '<style>path { stroke: black; stroke-width: 1px; } </style>'
+    svg_img += '<style>path { fill: none; stroke: black; stroke-width: 1px; } </style>'
 
     for c in contours_new:
         x, y = c[0][0]
