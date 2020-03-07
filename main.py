@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QHBoxLayout, QVBoxLayout, QSplitter, QLabel, QStatusBar, QMainWindow, QSlider, QFileDialog
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QFrame, QHBoxLayout, QVBoxLayout, QSplitter, QLabel, QStatusBar, QMainWindow, QSlider, QFileDialog
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtSvg import QSvgWidget, QSvgRenderer
 import sys
@@ -56,6 +56,11 @@ class MainWIndow(QMainWindow):
         btn_load.clicked.connect(self.load_image)
         btn_load.setIcon(QtGui.QIcon.fromTheme("document-open"))
         btn_layout.addWidget(btn_load)
+
+        line = QFrame()
+        line.setFrameShape(QFrame.HLine)
+        line.setFrameShadow(QFrame.Sunken)
+        btn_layout.addWidget(line)
 
         self.lbl_black = QLabel()
         self.slider_black = QSlider(QtCore.Qt.Horizontal)
@@ -123,6 +128,11 @@ class MainWIndow(QMainWindow):
         btn_layout.addWidget(self.lbl_gray_steps)
         btn_layout.addWidget(self.slider_gray_steps)
 
+        line = QFrame()
+        line.setFrameShape(QFrame.HLine)
+        line.setFrameShadow(QFrame.Sunken)
+        btn_layout.addWidget(line)
+
         self.lbl_margin = QLabel()
         self.slider_margin = QSlider(QtCore.Qt.Horizontal)
         self.slider_margin.setMinimum(1)
@@ -143,7 +153,12 @@ class MainWIndow(QMainWindow):
         self.slider_draw_width.setTickInterval(1)
         self.slider_draw_width.valueChanged.connect(self.value_change)
         btn_layout.addWidget(self.lbl_draw_width)
-        btn_layout.addWidget(self.slider_draw_width)
+        btn_layout.addWidget(self.slider_draw_width)        
+
+        line = QFrame()
+        line.setFrameShape(QFrame.HLine)
+        line.setFrameShadow(QFrame.Sunken)
+        btn_layout.addWidget(line)
 
         btn_update = QPushButton('Refresh image')
         btn_update.clicked.connect(self.update)
