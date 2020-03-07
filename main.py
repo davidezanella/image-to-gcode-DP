@@ -36,6 +36,8 @@ class MainWIndow(QMainWindow):
         self.canny_max = 200
         self.black_steps = 2
         self.gray_steps = 6
+        self.margin = 10
+        self.draw_width = 150
 
 
         self.statusBar = QStatusBar()
@@ -121,6 +123,28 @@ class MainWIndow(QMainWindow):
         btn_layout.addWidget(self.lbl_gray_steps)
         btn_layout.addWidget(self.slider_gray_steps)
 
+        self.lbl_margin = QLabel()
+        self.slider_margin = QSlider(QtCore.Qt.Horizontal)
+        self.slider_margin.setMinimum(1)
+        self.slider_margin.setMaximum(50)
+        self.slider_margin.setValue(self.margin)
+        self.slider_margin.setTickPosition(QSlider.TicksBelow)
+        self.slider_margin.setTickInterval(1)
+        self.slider_margin.valueChanged.connect(self.value_change)
+        btn_layout.addWidget(self.lbl_margin)
+        btn_layout.addWidget(self.slider_margin)
+
+        self.lbl_draw_width = QLabel()
+        self.slider_draw_width = QSlider(QtCore.Qt.Horizontal)
+        self.slider_draw_width.setMinimum(1)
+        self.slider_draw_width.setMaximum(210)
+        self.slider_draw_width.setValue(self.draw_width)
+        self.slider_draw_width.setTickPosition(QSlider.TicksBelow)
+        self.slider_draw_width.setTickInterval(1)
+        self.slider_draw_width.valueChanged.connect(self.value_change)
+        btn_layout.addWidget(self.lbl_draw_width)
+        btn_layout.addWidget(self.slider_draw_width)
+
         btn_update = QPushButton('Refresh image')
         btn_update.clicked.connect(self.update)
         btn_update.setIcon(QtGui.QIcon.fromTheme("view-refresh"))
@@ -149,7 +173,7 @@ class MainWIndow(QMainWindow):
 
         svg_img, self.gcode = elaborate_image(self.image_name, self.black_threshold,
             self.white_threshold, self.canny_min, self.canny_max,
-            self.black_steps, self.gray_steps)
+            self.black_steps, self.gray_steps, self.margin, self.draw_width)
         self.display_image_widget.update_image(svg_img)
 
         self.statusBar.showMessage('Ready')
@@ -162,6 +186,8 @@ class MainWIndow(QMainWindow):
         self.canny_max = self.slider_canny_max.value()
         self.black_steps = self.slider_black_steps.value()
         self.gray_steps = self.slider_gray_steps.value()
+        self.margin = self.slider_margin.value()
+        self.draw_width = self.slider_draw_width.value()
 
         self.lbl_black.setText('Black threshold: ' + str(self.black_threshold))
         self.lbl_white.setText('White threshold: ' + str(self.white_threshold))
@@ -169,11 +195,14 @@ class MainWIndow(QMainWindow):
         self.lbl_canny_max.setText('Canny max value: ' + str(self.canny_max))
         self.lbl_black_steps.setText('Black filling steps: ' + str(self.black_steps))
         self.lbl_gray_steps.setText('Gray filling steps: ' + str(self.gray_steps))
+        self.lbl_margin.setText('Margin on the paper: ' + str(self.margin) + ' mm')
+        self.lbl_draw_width.setText('Width of the draw: ' + str(self.draw_width) + ' mm')
 
 
     def get_gcode(self):
         fileName, _ = QFileDialog.getSaveFileName(self, "Save GCode", "path.gcode", "Gcode Files (*.gcode)")
         if fileName:
+            self.update()
             with open(fileName, "w+") as f:
                 f.write(self.gcode)
 

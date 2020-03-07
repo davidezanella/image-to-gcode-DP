@@ -5,7 +5,7 @@ import cv2
 import math
 
 
-def elaborate_image(image_name, blackThreshold, whiteThreshold, canny_min, canny_max, black_steps=2, gray_steps=6):
+def elaborate_image(image_name, blackThreshold, whiteThreshold, canny_min, canny_max, black_steps, gray_steps, margin, draw_width):
     white = [255,255,255]
     black = [0,0,0]
     gray = [81,81,81]
@@ -53,10 +53,9 @@ def elaborate_image(image_name, blackThreshold, whiteThreshold, canny_min, canny
         return 'M05\n'
 
     def move(x, y, fast=False):
-        x_max = 150
-        y_max = imageHeight / imageWidth * x_max
+        y_max = imageHeight / imageWidth * draw_width
 
-        ratio_x = x_max / imageWidth
+        ratio_x = draw_width / imageWidth
         ratio_y = y_max / imageHeight
 
         x = x * ratio_x
@@ -64,6 +63,10 @@ def elaborate_image(image_name, blackThreshold, whiteThreshold, canny_min, canny
 
         #to avoid mirroring
         y = y * -1 + y_max
+
+        #add margin
+        x += margin
+        y += margin
 
         cmd = 'G1'
         if fast:
