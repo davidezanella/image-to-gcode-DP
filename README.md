@@ -6,15 +6,17 @@ The resulting file can then be sent to the [Duck Plotter](https://github.com/dav
 ## How to use it
 First of all install the necessary requirements
 ```bash
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 ```
 
 Run the program
 ```bash
-python main.py
+python3 main.py
 ```
 
 Choose an image, tune the settings and find the best ones.
+
+To verify the dimensions of the final image in a A4 paper click on the button "Image preview".
 
 Export the results as a gcode file using the specific button.
 
