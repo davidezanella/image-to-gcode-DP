@@ -5,20 +5,19 @@ import cv2
 import math
 
 
-def elaborate_image(image_name, blackThreshold, whiteThreshold, canny_min, canny_max, black_steps, gray_steps, margin, draw_width):
-    white = [255,255,255]
-    black = [0,0,0]
-    gray = [81,81,81]
-
+def elaborate_image(image_name, blackThreshold, whiteThreshold, canny_min, canny_max, black_steps, gray_steps, margin,
+                    draw_width):
+    white = [255, 255, 255]
+    black = [0, 0, 0]
+    gray = [81, 81, 81]
 
     image = cv2.imread(image_name)
     gray_img = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     gray_img = cv2.medianBlur(image, 3)
     edged = cv2.Canny(gray_img, canny_min, canny_max)
 
-
     ret, labels = cv2.connectedComponents(edged)
-    contours, hierarchy = cv2.findContours(edged, cv2.RETR_EXTERNAL , cv2.CHAIN_APPROX_TC89_L1)
+    contours, hierarchy = cv2.findContours(edged, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_TC89_L1)
 
     imageWidth = image.shape[1]
     imageHeight = image.shape[0]
@@ -29,8 +28,8 @@ def elaborate_image(image_name, blackThreshold, whiteThreshold, canny_min, canny
 
     for xPos in range(imageWidth):
         for yPos in range(imageHeight):
-            R,G,B = image[yPos, xPos]
-            brightness = sum([R,G,B])/3
+            R, G, B = image[yPos, xPos]
+            brightness = sum([R, G, B]) / 3
 
             if labels[yPos, xPos] != 0:
                 for x in range(-1, 1):
@@ -44,7 +43,6 @@ def elaborate_image(image_name, blackThreshold, whiteThreshold, canny_min, canny
                 image[yPos, xPos] = gray
             else:
                 image[yPos, xPos] = white
-
 
     def penDown():
         return 'M03\n'
@@ -61,10 +59,10 @@ def elaborate_image(image_name, blackThreshold, whiteThreshold, canny_min, canny
         x = x * ratio_x
         y = y * ratio_y
 
-        #to avoid mirroring
+        # to avoid mirroring
         y = y * -1 + y_max
 
-        #add margin
+        # add margin
         x += margin
         y += margin
 
@@ -78,15 +76,15 @@ def elaborate_image(image_name, blackThreshold, whiteThreshold, canny_min, canny
         gcode = ''
         svg_img = ''
 
-        xArray = [(xPos, 0) for xPos in range(0, imageWidth, step)]
-        yArray = [(0, yPos) for yPos in range(0, imageHeight, step)]
+        x_array = [(xPos, 0) for xPos in range(0, imageWidth, step)]
+        y_array = [(0, yPos) for yPos in range(0, imageHeight, step)]
 
-        for xPos, yPos in xArray + yArray:
+        for xPos, yPos in x_array + y_array:
             begin = False
             xFound, yFound = (-1, -1)
             while xPos < imageWidth and yPos < imageHeight:
-                r1,g1,b1 = image[yPos, xPos]
-                r2,b2,g2 = target_color
+                r1, g1, b1 = image[yPos, xPos]
+                r2, b2, g2 = target_color
                 if r1 == r2 and b1 == b2 and g1 == g2:
                     if not begin:
                         xFound = xPos
@@ -100,7 +98,7 @@ def elaborate_image(image_name, blackThreshold, whiteThreshold, canny_min, canny
                         gcode += penUp()
 
                     begin = True
-                    output[yPos, xPos] = [0,0,0]
+                    output[yPos, xPos] = [0, 0, 0]
                 elif begin:
                     svg_img += '<path d="M {} {} '.format(xFound, yFound)
                     gcode += move(xFound, yFound, True)
@@ -127,13 +125,12 @@ def elaborate_image(image_name, blackThreshold, whiteThreshold, canny_min, canny
         cont = contours_new[-1]
 
         min_elem = min(contours_start,
-            key=lambda x: math.sqrt((cont[-1][0][0] - x[0][0][0])**2 + (cont[-1][0][1] - x[0][0][1])**2))
+                       key=lambda x: math.sqrt((cont[-1][0][0] - x[0][0][0]) ** 2 + (cont[-1][0][1] - x[0][0][1]) ** 2))
 
         cont_idx = [np.array_equal(min_elem, x) for x in contours_start].index(True)
 
         contours_new.append(min_elem)
         del contours_start[cont_idx]
-
 
     svg_img = '<svg width="{}" height="{}" xmlns="http://www.w3.org/2000/svg">'.format(imageWidth, imageHeight)
     svg_img += '<style>path { fill: none; stroke: black; stroke-width: 1px; } </style>'
@@ -160,4 +157,4 @@ def elaborate_image(image_name, blackThreshold, whiteThreshold, canny_min, canny
 
     svg_img += svg_img_black + svg_img_gray + '</svg>'
 
-    return svg_img, gcode
+    return svg_img, gcode, (imageWidth, imageHeight)
